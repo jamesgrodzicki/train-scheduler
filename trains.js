@@ -22,12 +22,6 @@ $('#add-train').on('click', event => {
     const firstTime = $('#first-time').val().trim();
     const frequency = $('#frequency').val().trim();
 
-    console.log(name);
-    console.log(destination);
-    console.log(firstTime);
-    console.log(frequency);
-
-
     database.ref().push({
         name: name,
         destination: destination,
@@ -35,9 +29,32 @@ $('#add-train').on('click', event => {
         frequency: frequency
     });
 
-    $('#name').text = '';
-    $('#destination').text = '';
-    $('#first-time').text = '';
-    $('#frequency').text = '';
+    $('#name').val('');
+    $('#destination').val('');
+    $('#first-time').val('');
+    $('#frequency').val('');
 });
+
+database.ref().orderByChild('dateAdded').on('child_added', childSnapshot => {
+    // console.log(childSnapshot.val());
+
+    const firstTime = childSnapshot.val().firstTime;
+    const frequency = childSnapshot.val().frequency;
+
+    const firstTimeConvert = moment(firstTime, 'HH:mm').subtract(1, 'years');
+
+    const diffTime = moment().diff(moment(firstTimeConvert), 'minutes');
+    const timeRemaining = diffTime % frequency;
+    const minutesTillNextTrain = frequency-timeRemaining;
+    const nextTrain = moment().add(minutesTillNextTrain, 'minutes');
+
+    $('table').append(`<tr>
+        <td>${childSnapshot.val().name}</td>
+        <td>${childSnapshot.val().destination}</td>
+        <td>${frequency}</td>
+        <td>${moment(nextTrain).format('hh:mm A')}</td>
+        <td>${minutesTillNextTrain}</td>
+    </tr>`);
+}, err => console.log(err.code));
+
 
