@@ -11,6 +11,33 @@ const firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
 
 const database = firebase.database();
+
+$('#add-train').on('click', event => {
+    event.preventDefault();
+
+    const name = $('#name').val().trim();
+    const destination = $('#destination').val().trim();
+    const firstTime = $('#first-time').val().trim();
+    const frequency = $('#frequency').val().trim();
+
+    console.log(name);
+    console.log(destination);
+    console.log(firstTime);
+    console.log(frequency);
+
+
+    database.ref().push({
+        name: name,
+        destination: destination,
+        firstTime: firstTime,
+        frequency: frequency
+    });
+
+    $('#name').text = '';
+    $('#destination').text = '';
+    $('#first-time').text = '';
+    $('#frequency').text = '';
+});
+
